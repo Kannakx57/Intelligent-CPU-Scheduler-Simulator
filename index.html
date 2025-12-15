@@ -70,11 +70,6 @@ th{
     color:#facc15;
     font-weight:bold;
 }
-.activity{
-    padding:8px;
-    border-left:4px solid #60a5fa;
-    margin-bottom:6px;
-}
 </style>
 </head>
 
@@ -117,8 +112,20 @@ th{
 </div>
 
 <div class="card">
-    <h2>Activity Log</h2>
-    <div id="activityLog"></div>
+    <h2>Activity Log (Energy Calculation)</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Process</th>
+                <th>Voltage (V)</th>
+                <th>Frequency (f)</th>
+                <th>Burst Time (T)</th>
+                <th>Formula</th>
+                <th>Energy</th>
+            </tr>
+        </thead>
+        <tbody id="activityLog"></tbody>
+    </table>
 </div>
 
 </div>
@@ -144,7 +151,7 @@ function runScheduler(){
     processes.sort((a,b)=>a.priority - b.priority);
     document.getElementById("activityLog").innerHTML = "";
 
-    processes.forEach(p=>{
+    processes.forEach(p => {
         let freq = p.priority <= 3 ? "HIGH" : "LOW";
         let voltage = freq === "HIGH" ? 1.2 : 0.8;
         let f = freq === "HIGH" ? 2.5 : 1.2;
@@ -153,7 +160,16 @@ function runScheduler(){
         p.freq = freq;
         p.energy = energy;
 
-        log(`Process ${p.pid} executed at ${freq} frequency → Energy = ${energy}`);
+        document.getElementById("activityLog").innerHTML += `
+        <tr>
+            <td>${p.pid}</td>
+            <td>${voltage}</td>
+            <td>${f}</td>
+            <td>${p.burst}</td>
+            <td>E = V² × f × T</td>
+            <td>${energy}</td>
+        </tr>
+        `;
     });
 
     renderTable();
@@ -161,7 +177,7 @@ function runScheduler(){
 
 function renderTable(){
     let rows = "";
-    processes.forEach(p=>{
+    processes.forEach(p => {
         rows += `
         <tr>
             <td>${p.pid}</td>
@@ -169,14 +185,10 @@ function renderTable(){
             <td>${p.priority}</td>
             <td class="${p.freq === 'HIGH' ? 'high' : 'low'}">${p.freq || "-"}</td>
             <td>${p.energy || "-"}</td>
-        </tr>`;
+        </tr>
+        `;
     });
     document.getElementById("ptable").innerHTML = rows;
-}
-
-function log(msg){
-    document.getElementById("activityLog").innerHTML +=
-        `<div class="activity">${msg}</div>`;
 }
 </script>
 
